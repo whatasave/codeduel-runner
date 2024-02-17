@@ -4,6 +4,7 @@
     "godotenv",
     "healthcheck",
     "joho",
+    "stdcopy",
     "xedom"
   ]
 }

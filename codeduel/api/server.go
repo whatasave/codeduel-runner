@@ -26,6 +26,11 @@ func NewAPIServer(host, port string) (*APIServer, error) {
 	if err != nil {
 		return nil, err
 	}
+	out, err := runner.Run("javascript", "console.log('1' == 1)", "ciao")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(out)
 
 	return &APIServer{
 		host:   host,

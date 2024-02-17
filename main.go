@@ -48,6 +48,7 @@ func warnUndefinedEnvVars() {
 		"HOST",
 		"PORT",
 		"FRONTEND_URL",
+		"DOCKER_IMAGE_PREFIX",
 	}
 
 	for _, envVar := range envVars {
