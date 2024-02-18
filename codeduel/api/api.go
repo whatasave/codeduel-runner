@@ -1,17 +1,39 @@
 package api
 
-import "net/http"
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
 
 var healthcheck Api = Json(
-	func(w http.ResponseWriter, r *http.Request) (any, error) {
+	func(w http.ResponseWriter, r *http.Request, body json.RawMessage) (any, error) {
 		return map[string]string{"status": "ok"}, nil
 	},
 )
 
 func run(s *APIServer) Api {
 	return Json(
-		func(w http.ResponseWriter, r *http.Request) (any, error) {
-			return map[string]string{"status": "ok"}, nil
+		func(w http.ResponseWriter, r *http.Request, raw json.RawMessage) (any, error) {
+			body := struct {
+				Language string `json:"language"`
+				Code     string `json:"code"`
+				Input    string `json:"input"`
+			}{
+				Input: "",
+			}
+			json.Unmarshal(raw, &body)
+			if body.Language == "" || body.Code == "" {
+				return nil, fmt.Errorf("language and code are required")
+			}
+			result, err := s.runner.Run(body.Language, body.Code, body.Input)
+			if result == nil {
+				return nil, err
+			}
+			if err != nil {
+				fmt.Println(err)
+			}
+			return result, nil
 		},
 	)
 }

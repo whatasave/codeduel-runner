@@ -2,4 +2,4 @@ FROM python:3.12.1-slim
 
 WORKDIR /app
 
-CMD echo $CODE > main.py && echo $INPUT | python3 main.py
+CMD echo $CODE > main.py && echo -n $INPUT | python3 main.py

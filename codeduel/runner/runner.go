@@ -18,8 +18,8 @@ type Runner struct {
 }
 
 type ExecutionResult struct {
-	output string
-	error  string
+	Output string `json:"output"`
+	Error  string `json:"error"`
 }
 
 func NewRunner() (*Runner, error) {
@@ -45,17 +45,17 @@ func (r *Runner) Run(language string, code string, input string) (*ExecutionResu
 	if !ok {
 		return nil, fmt.Errorf("language %s not supported", language)
 	}
-	container, err := r.client.ContainerCreate(context.Background(), &container.Config{
+	runnerContainer, err := r.client.ContainerCreate(context.Background(), &container.Config{
 		Image: os.Getenv("DOCKER_IMAGE_PREFIX") + language,
 		Env:   []string{fmt.Sprintf("CODE=%s", code), fmt.Sprintf("INPUT=%s", input)},
 	}, nil, nil, nil, "")
 	if err != nil {
 		return nil, err
 	}
-	if err := r.client.ContainerStart(context.Background(), container.ID, types.ContainerStartOptions{}); err != nil {
+	if err := r.client.ContainerStart(context.Background(), runnerContainer.ID, types.ContainerStartOptions{}); err != nil {
 		return nil, err
 	}
-	reader, err := r.client.ContainerLogs(context.Background(), container.ID, types.ContainerLogsOptions{
+	reader, err := r.client.ContainerLogs(context.Background(), runnerContainer.ID, types.ContainerLogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
 		Follow:     true,
@@ -72,5 +72,12 @@ func (r *Runner) Run(language string, code string, input string) (*ExecutionResu
 	}
 	error := errorBuffer.String()
 	output := outputBuffer.String()
-	return &ExecutionResult{output, error}, nil
+	result := &ExecutionResult{output, error}
+	if err := r.client.ContainerStop(context.Background(), runnerContainer.ID, container.StopOptions{}); err != nil {
+		return result, err
+	}
+	if err := r.client.ContainerRemove(context.Background(), runnerContainer.ID, types.ContainerRemoveOptions{}); err != nil {
+		return result, err
+	}
+	return result, nil
 }
