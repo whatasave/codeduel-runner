@@ -47,7 +47,7 @@ func (r *Runner) Run(language string, code string, input string) (*ExecutionResu
 	}
 	runnerContainer, err := r.client.ContainerCreate(context.Background(), &container.Config{
 		Image: os.Getenv("DOCKER_IMAGE_PREFIX") + language,
-		Env:   []string{fmt.Sprintf("CODE=%s", code), fmt.Sprintf("INPUT=%s", input)},
+		Env:   []string{fmt.Sprintf("CODE=%s", code), fmt.Sprintf("INPUT=%s", input), fmt.Sprintf("TIMEOUT=%s", os.Getenv("DOCKER_TIMEOUT"))},
 	}, nil, nil, nil, "")
 	if err != nil {
 		return nil, err

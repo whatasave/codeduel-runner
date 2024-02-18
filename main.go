@@ -49,6 +49,7 @@ func warnUndefinedEnvVars() {
 		"PORT",
 		"FRONTEND_URL",
 		"DOCKER_IMAGE_PREFIX",
+		"DOCKER_TIMEOUT",
 	}
 
 	for _, envVar := range envVars {
