@@ -2,10 +2,13 @@ FROM node:20.10.0-slim
 
 WORKDIR /app
 
-RUN npm init -y
-RUN npm install readline-sync
-RUN npm prune --production
+RUN apt-get update\
+ && apt-get install jq -y\
+ && npm init -y\
+ && npm install readline-sync\
+ && npm prune --production
 
-COPY polyfill.js polyfill.js
-COPY readline.js readline.js
-CMD echo $CODE > main.js && echo -n $INPUT | timeout $TIMEOUT node -r ./polyfill.js main.js
+COPY runner /runner
+COPY start.sh start.sh
+
+CMD ./start.sh "$CODE" "$TIMEOUT" "$INPUT"

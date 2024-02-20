@@ -16,11 +16,11 @@ func run(s *APIServer) Api {
 	return Json(
 		func(w http.ResponseWriter, r *http.Request, raw json.RawMessage) (any, error) {
 			body := struct {
-				Language string `json:"language"`
-				Code     string `json:"code"`
-				Input    string `json:"input"`
+				Language string   `json:"language"`
+				Code     string   `json:"code"`
+				Input    []string `json:"input"`
 			}{
-				Input: "",
+				Input: []string{""},
 			}
 			json.Unmarshal(raw, &body)
 			if body.Language == "" || body.Code == "" {

@@ -4,7 +4,7 @@ let stdin = ''
 // File descriptor for stdin
 let fd = null
 // Read stdin until endByte of end of file is reached
-// Beware that endByte is not necessarly the last character!
+// Beware that endByte is not necessarily the last character!
 function getStdin (endByte) {
   const BUFSIZE = 256
   let buf = Buffer.allocUnsafe(BUFSIZE)
@@ -25,7 +25,7 @@ function readline () {
   if (stdin.indexOf('\n') === -1) {
     stdin = stdin + getStdin('\n'.charCodeAt(0)).toString('utf-8')
   }
-  // If still empty then EOF reached. Return null to keep the same behaviour as SpiderMonkey.
+  // If still empty then EOF reached. Return null to keep the same behavior as SpiderMonkey.
   if (stdin.length === 0) {
     return null
   }

@@ -2,6 +2,7 @@ package runner
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -18,8 +19,9 @@ type Runner struct {
 }
 
 type ExecutionResult struct {
-	Output string `json:"output"`
-	Error  string `json:"error"`
+	Output     string `json:"output"`
+	Error      string `json:"error"`
+	Terminated bool   `json:"terminated"`
 }
 
 func NewRunner() (*Runner, error) {
@@ -40,14 +42,18 @@ func NewRunner() (*Runner, error) {
 	return &Runner{client, images}, nil
 }
 
-func (r *Runner) Run(language string, code string, input string) (*ExecutionResult, error) {
+func (r *Runner) Run(language string, code string, input []string) (*[]ExecutionResult, error) {
 	_, ok := r.images[language]
 	if !ok {
 		return nil, fmt.Errorf("language %s not supported", language)
 	}
 	runnerContainer, err := r.client.ContainerCreate(context.Background(), &container.Config{
 		Image: os.Getenv("DOCKER_IMAGE_PREFIX") + language,
-		Env:   []string{fmt.Sprintf("CODE=%s", code), fmt.Sprintf("INPUT=%s", input), fmt.Sprintf("TIMEOUT=%s", os.Getenv("DOCKER_TIMEOUT"))},
+		Env: []string{
+			fmt.Sprintf("CODE=%s", code),
+			fmt.Sprintf("INPUT=%s", encodeInput(input)),
+			fmt.Sprintf("TIMEOUT=%s", os.Getenv("DOCKER_TIMEOUT")),
+		},
 	}, nil, nil, nil, "")
 	if err != nil {
 		return nil, err
@@ -72,12 +78,23 @@ func (r *Runner) Run(language string, code string, input string) (*ExecutionResu
 	}
 	error := errorBuffer.String()
 	output := outputBuffer.String()
-	result := &ExecutionResult{output, error}
+	var result []ExecutionResult
+	err = json.Unmarshal([]byte(output), &result)
 	if err := r.client.ContainerStop(context.Background(), runnerContainer.ID, container.StopOptions{}); err != nil {
-		return result, err
+		return &result, err
 	}
 	if err := r.client.ContainerRemove(context.Background(), runnerContainer.ID, types.ContainerRemoveOptions{}); err != nil {
-		return result, err
+		return &result, err
 	}
-	return result, nil
+	if err != nil {
+		return nil, fmt.Errorf("cannot parse result %s: %s", output, err)
+	}
+	if error != "" {
+		return &result, fmt.Errorf("container error: %s", error)
+	}
+	return &result, nil
+}
+
+func encodeInput(input []string) string {
+	return strings.Join(input, "|")
 }
