@@ -22,7 +22,6 @@ type ExecutionResult struct {
 	Output     string `json:"output"`
 	Error      string `json:"error"`
 	Terminated bool   `json:"terminated"`
-	Skipped    bool   `json:"skipped"`
 }
 
 func NewRunner() (*Runner, error) {
