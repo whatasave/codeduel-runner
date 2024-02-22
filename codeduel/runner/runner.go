@@ -22,6 +22,7 @@ type ExecutionResult struct {
 	Output     string `json:"output"`
 	Error      string `json:"error"`
 	Terminated bool   `json:"terminated"`
+	Skipped    bool   `json:"skipped"`
 }
 
 func NewRunner() (*Runner, error) {
@@ -35,7 +36,7 @@ func NewRunner() (*Runner, error) {
 		return nil, err
 	}
 	for _, file := range files {
-		if file.IsDir() {
+		if file.IsDir() && !strings.HasPrefix(file.Name(), "_") {
 			images[file.Name()] = struct{}{}
 		}
 	}
@@ -86,15 +87,22 @@ func (r *Runner) Run(language string, code string, input []string) (*[]Execution
 	if err := r.client.ContainerRemove(context.Background(), runnerContainer.ID, types.ContainerRemoveOptions{}); err != nil {
 		return &result, err
 	}
+	if error != "" {
+		return nil, fmt.Errorf("container error: %s", error)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse result %s: %s", output, err)
-	}
-	if error != "" {
-		return &result, fmt.Errorf("container error: %s", error)
 	}
 	return &result, nil
 }
 
-func encodeInput(input []string) string {
-	return strings.Join(input, "|")
+func encodeInput(inputs []string) string {
+	var sb strings.Builder
+	for i, input := range inputs {
+		if i > 0 {
+			sb.WriteString("\n")
+		}
+		sb.WriteString(strings.ReplaceAll(input, "\n", "\\\n"))
+	}
+	return sb.String()
 }

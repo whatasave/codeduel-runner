@@ -8,7 +8,7 @@ RUN apt-get update\
  && npm install readline-sync\
  && npm prune --production
 
+COPY base .
 COPY runner /runner
-COPY start.sh start.sh
 
-CMD ./start.sh "$CODE" "$TIMEOUT" "$INPUT"
+CMD echo "$CODE" > main.js && ./start.sh "$TIMEOUT" "$INPUT" "node -r /runner/polyfill.js main.js"

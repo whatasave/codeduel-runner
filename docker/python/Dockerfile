@@ -2,4 +2,9 @@ FROM python:3.12.1-slim
 
 WORKDIR /app
 
-CMD echo $CODE > main.py && echo -n $INPUT | timeout $TIMEOUT python3 main.py
+RUN apt-get update\
+ && apt-get install jq -y
+
+COPY base .
+
+CMD echo "$CODE" > main.py && ./start.sh "$TIMEOUT" "$INPUT" "python3 main.py"
