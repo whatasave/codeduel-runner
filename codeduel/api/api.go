@@ -6,14 +6,22 @@ import (
 	"net/http"
 )
 
-var healthcheck Api = Json(
+var healthcheck Api = Json("GET",
 	func(w http.ResponseWriter, r *http.Request, body json.RawMessage) (any, error) {
 		return map[string]string{"status": "ok"}, nil
 	},
 )
 
+func availableLanguages(s *APIServer) Api {
+	return Json("GET",
+		func(w http.ResponseWriter, r *http.Request, body json.RawMessage) (any, error) {
+			return s.runner.AvailableLanguages(), nil
+		},
+	)
+}
+
 func run(s *APIServer) Api {
-	return Json(
+	return Json("POST",
 		func(w http.ResponseWriter, r *http.Request, raw json.RawMessage) (any, error) {
 			body := struct {
 				Language string   `json:"language"`

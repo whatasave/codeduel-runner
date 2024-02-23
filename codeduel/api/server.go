@@ -41,6 +41,7 @@ func (s *APIServer) Run() {
 
 	router.HandleFunc("/api/v1", healthcheck)
 	router.HandleFunc("/api/v1/run", run(s))
+	router.HandleFunc("/api/v1/languages", availableLanguages(s))
 
 	frontendUrl := os.Getenv("FRONTEND_URL")
 

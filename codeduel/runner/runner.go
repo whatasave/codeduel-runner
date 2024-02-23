@@ -95,6 +95,14 @@ func (r *Runner) Run(language string, code string, input []string) (*[]Execution
 	return &result, nil
 }
 
+func (r *Runner) AvailableLanguages() []string {
+	keys := make([]string, 0, len(r.images))
+	for k := range r.images {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
 func encodeInput(inputs []string) string {
 	var sb strings.Builder
 	for i, input := range inputs {
