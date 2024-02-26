@@ -1,7 +1,8 @@
-BINARY_NAME=codeduel-runner.exe
+include .$(PWD)/.env
+BINARY_NAME=codeduel-runner
 
 build:
-	go build -o ./bin/$(BINARY_NAME) -v
+	go build -o ./bin/$(BINARY_NAME).exe -v
 
 run: build
 	./bin/$(BINARY_NAME)
@@ -12,18 +13,18 @@ dev:
 test:
 	go test -v ./...
 
-docker-build:
-	docker build -t codeduel-runner .
+docker-setup:
+	powershell ./docker_setup.ps1
 
-docker-up:
-	docker run -d -p 5001:5001 --name codeduel-runner --env-file .env.docker codeduel-runner
+docker-build:
+	docker build --build-arg="PORT=$(PORT)" -t codeduel-runner .
+
+docker-up: docker-build docker-down
+	docker run -d --privileged -v="/var/run/docker.sock:/var/run/docker.sock" -p=$(PORT):$(PORT) --name="codeduel-runner" --env-file=".env" codeduel-runner
 
 docker-down:
-	docker stop codeduel-runner
-	docker rm codeduel-runner
-
-docker-restart: docker-down docker-up
+	-docker stop codeduel-runner && docker rm codeduel-runner
 
 clean:
 	go clean
-	rm -f bin/$(BINARY_NAME)
+	-rm -f bin/$(BINARY_NAME).exe

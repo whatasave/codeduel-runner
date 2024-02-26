@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"log"
 	"os"
 	"path/filepath"
@@ -26,7 +27,11 @@ func loadingEnvVars() {
 		return
 	}
 
-	pathDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Printf("[MAIN] Error getting working directory: %v", err)
+	}
+	pathDir, err := filepath.Abs(wd)
 	if err != nil {
 		log.Printf("[MAIN] Error getting absolute path: %v", err)
 	}

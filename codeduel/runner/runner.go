@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -29,16 +30,7 @@ func NewRunner() (*Runner, error) {
 	if err != nil {
 		return nil, err
 	}
-	images := make(map[string]struct{}, 0)
-	files, err := os.ReadDir("./docker")
-	if err != nil {
-		return nil, err
-	}
-	for _, file := range files {
-		if file.IsDir() && !strings.HasPrefix(file.Name(), "_") {
-			images[file.Name()] = struct{}{}
-		}
-	}
+	images := getAvailableDockerImages()
 	return &Runner{client, images}, nil
 }
 
@@ -112,4 +104,19 @@ func encodeInput(inputs []string) string {
 		sb.WriteString(strings.ReplaceAll(input, "\n", "\\\n"))
 	}
 	return sb.String()
+}
+
+func getAvailableDockerImages() map[string]struct{} {
+	languages, err := os.ReadFile("languages.txt")
+	if err != nil {
+		log.Printf("[MAIN] Error reading languages.txt: %v", err)
+	}
+	var availableDockerImages = map[string]struct{}{}
+	for _, language := range strings.Split(string(languages[:]), "\n") {
+		if language == "" {
+			continue
+		}
+		availableDockerImages[language] = struct{}{}
+	}
+	return availableDockerImages
 }
