@@ -96,14 +96,12 @@ func (r *Runner) AvailableLanguages() []string {
 }
 
 func encodeInput(inputs []string) string {
-	var sb strings.Builder
-	for i, input := range inputs {
-		if i > 0 {
-			sb.WriteString("\n")
-		}
-		sb.WriteString(strings.ReplaceAll(input, "\n", "\\\n"))
+	encoded, err := json.Marshal(inputs)
+	if err != nil {
+		log.Printf("[MAIN] Error encoding input: %v", err)
+		return "[]"
 	}
-	return sb.String()
+	return string(encoded)
 }
 
 func getAvailableDockerImages() map[string]struct{} {
