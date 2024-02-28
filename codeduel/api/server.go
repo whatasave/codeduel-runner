@@ -18,6 +18,7 @@ type APIServer struct {
 }
 
 type ApiError struct {
+	Error   bool   `json:"error"`
 	Message string `json:"message"`
 }
 

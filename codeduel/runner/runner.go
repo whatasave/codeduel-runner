@@ -21,7 +21,7 @@ type Runner struct {
 
 type ExecutionResult struct {
 	Output     string `json:"output"`
-	Error      string `json:"error"`
+	Error      string `json:"errors"`
 	Terminated bool   `json:"terminated"`
 }
 

@@ -22,7 +22,7 @@ func Json(method string, api JsonApi) Api {
 			err := decoder.Decode(&body)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
-				json.NewEncoder(w).Encode(ApiError{Message: "Body should be a valid JSON object"})
+				json.NewEncoder(w).Encode(ApiError{Error: true, Message: "Body should be a valid JSON object"})
 				return
 			}
 		}
@@ -30,7 +30,7 @@ func Json(method string, api JsonApi) Api {
 			if w.Header().Get("status") == "" {
 				w.WriteHeader(http.StatusInternalServerError)
 			}
-			json.NewEncoder(w).Encode(ApiError{Message: err.Error()})
+			json.NewEncoder(w).Encode(ApiError{Error: true, Message: err.Error()})
 		} else {
 			if w.Header().Get("status") == "" {
 				w.WriteHeader(http.StatusOK)
