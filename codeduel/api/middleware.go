@@ -35,7 +35,7 @@ func Json(method string, api JsonApi) Api {
 			if w.Header().Get("status") == "" {
 				w.WriteHeader(http.StatusOK)
 			}
-			json.NewEncoder(w).Encode(result)
+			json.NewEncoder(w).Encode(ApiResult{Error: false, Result: result})
 		}
 	}
 }

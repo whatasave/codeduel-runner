@@ -22,6 +22,11 @@ type ApiError struct {
 	Message string `json:"message"`
 }
 
+type ApiResult struct {
+	Error  bool `json:"error"`
+	Result any  `json:"result"`
+}
+
 func NewAPIServer(host, port string) (*APIServer, error) {
 	runner, err := runner.NewRunner()
 	if err != nil {
