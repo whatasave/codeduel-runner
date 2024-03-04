@@ -20,10 +20,9 @@ type Runner struct {
 }
 
 type ExecutionResult struct {
-	Output     string `json:"output"`
-	Error      string `json:"errors"`
-	Status     int64  `json:"status"`
-	Terminated bool   `json:"terminated"`
+	Output string `json:"output"`
+	Error  string `json:"errors"`
+	Status int64  `json:"status"`
 }
 
 func NewRunner() (*Runner, error) {
