@@ -17,13 +17,13 @@ docker-setup:
 	powershell ./docker_setup.ps1
 
 docker-build:
-	docker build --build-arg="PORT=$(PORT)" -t codeduel-runner .
+	docker build --build-arg="PORT=$(PORT)" -t xedom/codeduel-runner .
 
 docker-up: docker-build docker-down
-	docker run -d --privileged -v="/var/run/docker.sock:/var/run/docker.sock" -p=$(PORT):$(PORT) --name="codeduel-runner" --env-file=".env" codeduel-runner
+	docker run -d --privileged -v="/var/run/docker.sock:/var/run/docker.sock" -p=$(PORT):$(PORT) --name="codeduel-runner" --env-file=".env" xedom/codeduel-runner
 
 docker-down:
-	-docker stop codeduel-runner && docker rm codeduel-runner
+	-docker stop xedom/codeduel-runner && docker rm xedom/codeduel-runner
 
 clean:
 	go clean
