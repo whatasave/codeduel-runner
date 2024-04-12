@@ -16,6 +16,9 @@ test:
 docker-setup:
 	powershell ./docker_setup.ps1
 
+docker-push:
+	docker push xedom/codeduel-runner
+
 docker-build:
 	docker build --build-arg="PORT=$(PORT)" -t xedom/codeduel-runner .
 
