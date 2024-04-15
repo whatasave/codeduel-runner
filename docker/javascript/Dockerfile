@@ -5,7 +5,6 @@ WORKDIR /app
 RUN apt-get update\
  && apt-get install jq -y\
  && npm init -y\
- && npm install readline-sync\
  && npm prune --production
 
 COPY base .
