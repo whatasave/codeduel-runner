@@ -22,5 +22,13 @@ COPY docker docker
 COPY docker_setup.sh docker_setup.sh
 COPY .env .env
 
+ENV BINARY_NAME="codeduel-runner"
+ENV DOCKER_IMAGE_PREFIX="cd-runner-"
+ENV DOCKER_TIMEOUT="5s"
+ENV ENV="production"
+ENV HOST=0.0.0.0
+ENV PORT=80
+
 EXPOSE $PORT
+
 ENTRYPOINT ["bash", "-c", "./docker_setup.sh && codeduel-runner"]

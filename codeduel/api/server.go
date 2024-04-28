@@ -55,7 +55,7 @@ func (s *APIServer) Run() {
 	err := http.ListenAndServe(address, handlers.CORS(
 		handlers.AllowedOrigins([]string{frontendUrl}),
 		handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "PUT", "DELETE"}),
-		handlers.AllowedHeaders([]string{"Content-Type", "Access-Control-Allow-Headers", "Authorization", "X-Requested-With", "x-jwt-token"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Access-Control-Allow-Headers", "Authorization", "X-Requested-With", "x-token"}),
 		handlers.AllowCredentials(),
 	)(router))
 
