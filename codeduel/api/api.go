@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -39,7 +40,7 @@ func run(s *APIServer) Api {
 				return nil, err
 			}
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 			return result, nil
 		},
