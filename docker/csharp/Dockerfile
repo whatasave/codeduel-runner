@@ -5,8 +5,9 @@ WORKDIR /app
 
 COPY base .
 
-RUN apt-get update &&\
-    apt-get install jq -y &&\
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends jq && \
+    rm -rf /var/lib/apt/lists/* && \
     dotnet new console
 
-CMD echo "$CODE" > Program.cs && dotnet build . > /dev/null && ./start.sh "$TIMEOUT" "$INPUT" "./bin/Debug/net8.0/app"
+CMD ["bash", "-c", "echo \"$CODE\" > Program.cs && dotnet build . > /dev/null && ./start.sh \"$TIMEOUT\" \"$INPUT\" \"./bin/Debug/net8.0/app\""]

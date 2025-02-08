@@ -1,10 +1,10 @@
-FROM saschpe/kotlinc
+FROM zenika/kotlin
 
 WORKDIR /app
 
-RUN apt-get update\
- && apt-get install jq -y
+RUN apk update && \
+    apk add --no-cache jq
 
 COPY base .
 
-CMD echo "$CODE" > main.kt && ./start.sh "$TIMEOUT" "$INPUT" "kotlinc main.kt -include-runtime -d main.jar && java -jar main.jar"
+CMD [ "sh", "-c", "echo \"$CODE\" > main.kt && ./start.sh \"$TIMEOUT\" \"$INPUT\" \"kotlinc main.kt -include-runtime -d main.jar && java -jar main.jar\"" ]

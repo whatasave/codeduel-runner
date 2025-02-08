@@ -1,12 +1,13 @@
-FROM golang:1.22 as build-stage
+FROM golang:1.22
 
 WORKDIR /app
 
-RUN apt-get update\
- && apt-get install jq -y\
- && go mod init main\
- && go mod tidy
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends jq && \
+    rm -rf /var/lib/apt/lists/* && \
+    go mod init main && \
+    go mod tidy
 
-COPY base .
+COPY base/ .
 
-CMD echo "$CODE" > main.go && ./start.sh "$TIMEOUT" "$INPUT" "go run main.go"
+CMD ["/bin/sh", "-c", "echo \"$CODE\" > main.go && ./start.sh \"$TIMEOUT\" \"$INPUT\" \"go run main.go\""]
