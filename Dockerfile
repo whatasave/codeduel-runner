@@ -1,4 +1,4 @@
-FROM golang:1.21 as build-stage
+FROM golang:1.22 as build-stage
 
 WORKDIR /app
 
@@ -18,10 +18,9 @@ RUN apt-get update && apt-get install -y docker.io
 COPY --from=build-stage /app/bin /usr/local/bin
 COPY docker docker
 COPY docker_setup.sh docker_setup.sh
-COPY .env .env
 
 ENV BINARY_NAME="codeduel-runner"
-ENV DOCKER_IMAGE_PREFIX="cd-runner-"
+ENV DOCKER_IMAGE_PREFIX="cdr-"
 ENV DOCKER_TIMEOUT="5s"
 ENV ENV="production"
 ENV HOST=0.0.0.0

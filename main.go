@@ -52,7 +52,6 @@ func warnUndefinedEnvVars() {
 	envVars := []string{
 		"HOST",
 		"PORT",
-		"FRONTEND_URL",
 		"DOCKER_IMAGE_PREFIX",
 		"DOCKER_TIMEOUT",
 	}
