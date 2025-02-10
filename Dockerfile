@@ -38,6 +38,9 @@ COPY --from=build-stage /etc/passwd /etc/passwd
 COPY docker docker
 COPY docker_setup.sh docker_setup.sh
 
+RUN chmod +x docker_setup.sh && \
+    chown -R 1001:1001 /app
+
 USER 1001
 EXPOSE $PORT
 
