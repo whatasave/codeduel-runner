@@ -34,7 +34,7 @@ func NewRunner() (*Runner, error) {
 	return &Runner{client, images}, nil
 }
 
-func (r *Runner) Run(language string, code string, input []string) (*[]ExecutionResult, error) {
+func (r *Runner) Run(language string, code string, inputTests []string) (*[]ExecutionResult, error) {
 	_, ok := r.images[language]
 	if !ok {
 		return nil, fmt.Errorf("language %s not supported", language)
@@ -43,7 +43,7 @@ func (r *Runner) Run(language string, code string, input []string) (*[]Execution
 		Image: os.Getenv("DOCKER_IMAGE_PREFIX") + language,
 		Env: []string{
 			fmt.Sprintf("CODE=%s", code),
-			fmt.Sprintf("INPUT=%s", encodeInput(input)),
+			fmt.Sprintf("INPUT=%s", encodeInput(inputTests)),
 			fmt.Sprintf("TIMEOUT=%s", os.Getenv("DOCKER_TIMEOUT")),
 		},
 	}, nil, nil, nil, "")

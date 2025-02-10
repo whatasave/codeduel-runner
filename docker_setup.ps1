@@ -12,6 +12,8 @@ $CURRENT_DIR=$pwd
 Get-ChildItem docker -Directory -Exclude _base | Foreach-Object {
     $name = $_.Name
     Set-Location docker/$name
+    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue base
+    New-Item -ItemType Directory -Name base
     Copy-Item ../_base/* -Destination ./base
     docker build -t "$env:DOCKER_IMAGE_PREFIX$name" -f Dockerfile .
     Set-Location ../..
