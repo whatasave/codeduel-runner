@@ -1,5 +1,3 @@
-ARG PORT=5000
-
 FROM golang:1.21 as build-stage
 
 WORKDIR /app
