@@ -34,7 +34,7 @@ func NewRunner() (*Runner, error) {
 	return &Runner{client, images}, nil
 }
 
-func (r *Runner) Run(language string, code string, inputTests []string) (*[]ExecutionResult, error) {
+func (r *Runner) Run(language string, code string, inputTests []string) ([]ExecutionResult, error) {
 	_, ok := r.images[language]
 	if !ok {
 		return nil, fmt.Errorf("language %s not supported", language)
@@ -73,10 +73,10 @@ func (r *Runner) Run(language string, code string, inputTests []string) (*[]Exec
 	var result []ExecutionResult
 	err = json.Unmarshal([]byte(output), &result)
 	if err := r.client.ContainerStop(context.Background(), runnerContainer.ID, container.StopOptions{}); err != nil {
-		return &result, err
+		return result, err
 	}
 	if err := r.client.ContainerRemove(context.Background(), runnerContainer.ID, types.ContainerRemoveOptions{}); err != nil {
-		return &result, err
+		return result, err
 	}
 	if error != "" {
 		return nil, fmt.Errorf("container error: %s", error)
@@ -84,7 +84,7 @@ func (r *Runner) Run(language string, code string, inputTests []string) (*[]Exec
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse result %s: %s", output, err)
 	}
-	return &result, nil
+	return result, nil
 }
 
 func (r *Runner) AvailableLanguages() []string {

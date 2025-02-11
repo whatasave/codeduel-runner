@@ -16,7 +16,7 @@ printf '%s' "$INPUT" | jq -c '.[]' | while IFS= read -r item; do
     
     jq --null-input --compact-output \
        --arg output "$output" \
-       --arg error "$error" \
+       --arg errors "$error" \
        --argjson status "$exit_status" \
        '$ARGS.named'
     
