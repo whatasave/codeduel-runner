@@ -3,7 +3,7 @@ FROM node:23-alpine3.20
 WORKDIR /app
 
 COPY base/ .
-COPY runner/ ./runner
+COPY runner/ /runner
 
 RUN apk add --no-cache jq &&\
     npm init -y && \
