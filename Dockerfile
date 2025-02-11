@@ -17,14 +17,14 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/$BINARY_NAME -v
 FROM build-stage AS run-test-stage
 RUN go test -v ./...
 
+
 FROM docker:20.10.24-dind AS release-stage
 
 WORKDIR /app
 
-COPY --from=build-stage /app/bin /usr/local/bin
+COPY --from=build-stage /usr/src/app/bin /usr/local/bin
 COPY docker docker
 COPY docker_setup.sh docker_setup.sh
-COPY .env .env
 
 ENV BINARY_NAME="codeduel-runner"
 ENV DOCKER_IMAGE_PREFIX="cdr-"
@@ -33,7 +33,6 @@ ENV ENV="production"
 ENV HOST=0.0.0.0
 ENV PORT=80
 
-COPY --from=build-stage /usr/src/app/bin /usr/local/bin
 COPY --from=build-stage /etc/passwd /etc/passwd
 
 COPY docker docker
@@ -42,7 +41,5 @@ COPY docker_setup.sh docker_setup.sh
 RUN chmod +x docker_setup.sh
 
 EXPOSE $PORT
-
-RUN apk add --no-cache bash
 
 ENTRYPOINT ["sh", "-c", "./docker_setup.sh && codeduel-runner"]
