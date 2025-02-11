@@ -7,7 +7,7 @@ MAX_OUTPUT_LENGTH=1000
 MAX_ERROR_LENGTH=1000
 
 printf '%s' "$INPUT" | jq -c '.[]' | while IFS= read -r item; do
-    result=$(printf '%s' "$item" | jq -rc | timeout "$TIMEOUT" "$RUN" 2> /tmp/Error)
+    result=$(printf '%s' "$item" | jq -rc | timeout "$TIMEOUT" $RUN 2> /tmp/Error)
     exit_status=$?
     err=$(cat /tmp/Error)
     
