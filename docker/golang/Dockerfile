@@ -11,5 +11,4 @@ RUN apt-get update && \
     go mod init main && \
     go mod tidy
 
-
 CMD ["/bin/sh", "-c", "echo \"$CODE\" > main.go && ./start.sh \"$TIMEOUT\" \"$INPUT\" \"go run main.go\""]

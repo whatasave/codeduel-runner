@@ -1,16 +1,13 @@
-FROM node:20.10.0-slim
+FROM node:23-alpine3.20
 
 WORKDIR /app
 
-COPY base/ ./base
-COPY runner/ ./runner
+COPY base .
+COPY runner /runner
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends jq && \
+RUN apk add --no-cache jq &&\
     npm init -y && \
     npm prune --production && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
     chmod +x start.sh
 
 ENTRYPOINT [ "sh", "-c", "echo \"$CODE\" > main.js && ./start.sh \"$TIMEOUT\" \"$INPUT\" \"node -r /runner/polyfill.js main.js\"" ]

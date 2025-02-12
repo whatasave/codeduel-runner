@@ -8,3 +8,4 @@ Makefile
 docker_setup.ps1
 .gitignore
 .env.*
+.env
