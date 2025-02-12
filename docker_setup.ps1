@@ -1,11 +1,3 @@
-Get-Content .env | ForEach-Object {
-  $name, $value = $_.split('=')
-  if ([string]::IsNullOrWhiteSpace($name) -or $name.Contains('#')) {
-    return
-  }
-  Set-Content env:\$name $value
-}
-
 New-Item languages.txt -ItemType File -Force
 
 $CURRENT_DIR=$pwd
