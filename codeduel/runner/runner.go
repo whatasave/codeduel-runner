@@ -35,6 +35,9 @@ func NewRunner() (*Runner, error) {
 }
 
 func (r *Runner) Run(language string, code string, inputTests []string) ([]ExecutionResult, error) {
+	if inputTests == nil {
+		return []ExecutionResult{}, nil
+	}
 	_, ok := r.images[language]
 	if !ok {
 		return nil, fmt.Errorf("language %s not supported", language)
