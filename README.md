@@ -8,16 +8,6 @@ Install all the Project dependencies.
 $ go mod download
 ```
 
-Run the `docker_setup` script inside the root folder. It will check all the languages present in the `docker/` folder; build a docker image for each of them a save the language name in the `language.txt` file.
-
-```bash
-# on windows:
-$ .\docker_setup.ps1
-
-# on linux:
-$ ./docker_setup.sh
-```
-
 Now you can run the Project.
 
 ```bash

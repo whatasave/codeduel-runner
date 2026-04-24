@@ -1,6 +1,6 @@
 module github.com/xedom/codeduel
 
-go 1.21.5
+go 1.26.2
 
 require (
 	github.com/docker/docker v24.0.7+incompatible
