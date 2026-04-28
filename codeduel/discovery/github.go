@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/xedom/codeduel/codeduel/utils"
 )
@@ -17,21 +18,23 @@ type GHPackage struct {
 }
 
 type GitHubProvider struct {
-	Org   string
-	Repo  string
-	Token string
+	Org    string
+	Repo   string
+	Token  string
+	config *utils.Config
 }
 
 func NewGitHubProvider(config *utils.Config) *GitHubProvider {
 	return &GitHubProvider{
-		Org:   config.GitHubOrg,
-		Repo:  config.GitHubRepo,
-		Token: config.GitHubToken,
+		Org:    config.GitHubOrg,
+		Repo:   config.GitHubRepo,
+		Token:  config.GitHubToken,
+		config: config,
 	}
 }
 
-func (g *GitHubProvider) GetAvailableLanguages() (map[string]struct{}, error) {
-	availableImages := make(map[string]struct{})
+func (g *GitHubProvider) GetAvailableImages() (map[string]string, error) {
+	availableImages := make(map[string]string)
 
 	url := fmt.Sprintf("https://api.github.com/orgs/%s/packages?package_type=container", g.Org)
 
@@ -67,9 +70,30 @@ func (g *GitHubProvider) GetAvailableLanguages() (map[string]struct{}, error) {
 
 	for _, pkg := range packages {
 		if pkg.Repository.Name == g.Repo {
-			availableImages[pkg.Name] = struct{}{}
+			imageName := g.config.DockerRegistry + "/" + g.Org + "/" + pkg.Name + ":latest"
+			languageTag := strings.TrimPrefix(pkg.Name, g.config.DockerImagePrefix)
+
+			availableImages[languageTag] = imageName
 		}
 	}
 
 	return availableImages, nil
+}
+
+func (g *GitHubProvider) GetImageName(lang string) string {
+	return fmt.Sprintf("%s/%s/%s%s:latest",
+		g.config.DockerRegistry,
+		g.config.GitHubOrg,
+		g.config.DockerImagePrefix,
+		lang,
+	)
+}
+
+func GetImageFullName(config *utils.Config, lang string) string {
+	return fmt.Sprintf("%s/%s/%s%s:latest",
+		config.DockerRegistry,
+		config.GitHubOrg,
+		config.DockerImagePrefix,
+		lang,
+	)
 }

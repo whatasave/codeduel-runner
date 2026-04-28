@@ -17,7 +17,7 @@ import (
 type Runner struct {
 	config *utils.Config
 	client *client.Client
-	images map[string]struct{}
+	images map[string]string
 }
 
 type ExecutionResult struct {
@@ -26,7 +26,7 @@ type ExecutionResult struct {
 	Status int64  `json:"status"`
 }
 
-func NewRunner(config *utils.Config, dockerClient *client.Client, images map[string]struct{}) *Runner {
+func NewRunner(config *utils.Config, dockerClient *client.Client, images map[string]string) *Runner {
 	return &Runner{
 		config: config,
 		client: dockerClient,
@@ -38,9 +38,8 @@ func (r *Runner) Run(language string, code string, inputTests []string) ([]Execu
 	if inputTests == nil {
 		return []ExecutionResult{}, nil
 	}
-	image := r.config.DockerImagePrefix + language
 
-	_, ok := r.images[image]
+	image, ok := r.images[language]
 	if !ok {
 		return nil, fmt.Errorf("language %s not supported", language)
 	}
@@ -94,6 +93,7 @@ func (r *Runner) Run(language string, code string, inputTests []string) ([]Execu
 
 func (r *Runner) AvailableLanguages() []string {
 	keys := make([]string, 0, len(r.images))
+	fmt.Printf("[RUNNER] %v\n", r.images)
 	for k := range r.images {
 		keys = append(keys, k)
 	}

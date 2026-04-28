@@ -16,9 +16,9 @@ func main() {
 
 	provider := discovery.NewGitHubProvider(config)
 
-	langs, err := provider.GetAvailableLanguages()
+	images, err := provider.GetAvailableImages()
 	if err != nil {
-		log.Printf("[MAIN] Warning: Could not fetch dynamic languages: %v. Falling back to local defaults.", err)
+		log.Printf("[MAIN] Warning: Could not fetch dynamic images: %v. Falling back to local defaults.", err)
 	}
 
 	dockerCli, err := client.NewClientWithOpts(client.FromEnv)
@@ -29,7 +29,7 @@ func main() {
 	codeRunner := runner.NewRunner(
 		config,
 		dockerCli,
-		langs,
+		images,
 	)
 
 	server, err := api.NewAPIServer(

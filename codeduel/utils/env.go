@@ -11,6 +11,7 @@ type Config struct {
 	Host string
 	Port string
 
+	DockerRegistry    string
 	DockerImagePrefix string
 	DockerTimeout     string
 
@@ -36,6 +37,7 @@ func LoadConfig() *Config {
 
 			DockerImagePrefix: GetEnv("DOCKER_IMAGE_PREFIX", "cdr-"),
 			DockerTimeout:     GetEnv("DOCKER_TIMEOUT", "5"),
+			DockerRegistry:    GetEnv("DOCKER_REGISTRY", "ghcr.io/"),
 
 			GitHubToken: GetEnv("GITHUB_TOKEN", ""),
 			GitHubOrg:   GetEnv("GITHUB_ORG", "whatasave"),
