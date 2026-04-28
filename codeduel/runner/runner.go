@@ -93,7 +93,6 @@ func (r *Runner) Run(language string, code string, inputTests []string) ([]Execu
 
 func (r *Runner) AvailableLanguages() []string {
 	keys := make([]string, 0, len(r.images))
-	fmt.Printf("[RUNNER] %v\n", r.images)
 	for k := range r.images {
 		keys = append(keys, k)
 	}
