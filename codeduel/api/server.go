@@ -26,17 +26,8 @@ type ApiResult struct {
 	Result any  `json:"result"`
 }
 
-func NewAPIServer(host, port string) (*APIServer, error) {
-	runner, err := runner.NewRunner()
-	if err != nil {
-		return nil, err
-	}
-
-	return &APIServer{
-		host:   host,
-		port:   port,
-		runner: runner,
-	}, nil
+func NewAPIServer(host, port string, runner *runner.Runner) (*APIServer, error) {
+	return &APIServer{host: host, port: port, runner: runner}, nil
 }
 
 func (s *APIServer) Run() {

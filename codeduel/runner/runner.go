@@ -25,13 +25,11 @@ type ExecutionResult struct {
 	Status int64  `json:"status"`
 }
 
-func NewRunner() (*Runner, error) {
-	client, err := client.NewClientWithOpts(client.FromEnv)
-	if err != nil {
-		return nil, err
+func NewRunner(dockerClient *client.Client, images map[string]struct{}) *Runner {
+	return &Runner{
+		client: dockerClient,
+		images: images,
 	}
-	images := getAvailableDockerImages()
-	return &Runner{client, images}, nil
 }
 
 func (r *Runner) Run(language string, code string, inputTests []string) ([]ExecutionResult, error) {
@@ -105,19 +103,4 @@ func encodeInput(inputs []string) string {
 		return "[]"
 	}
 	return string(encoded)
-}
-
-func getAvailableDockerImages() map[string]struct{} {
-	languages, err := os.ReadFile("languages.txt")
-	if err != nil {
-		log.Printf("[MAIN] Error reading languages.txt: %v", err)
-	}
-	var availableDockerImages = map[string]struct{}{}
-	for _, language := range strings.Split(string(languages[:]), "\n") {
-		if language == "" {
-			continue
-		}
-		availableDockerImages[language] = struct{}{}
-	}
-	return availableDockerImages
 }

@@ -6,18 +6,45 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/docker/docker/client"
 	"github.com/joho/godotenv"
 	"github.com/xedom/codeduel/codeduel/api"
+	"github.com/xedom/codeduel/codeduel/discovery"
+	"github.com/xedom/codeduel/codeduel/runner"
 )
 
 func main() {
 	loadingEnvVars()
 	warnUndefinedEnvVars()
 
-	server, err := api.NewAPIServer(os.Getenv("HOST"), os.Getenv("PORT"))
+	provider := &discovery.GitHubProvider{
+		Org:   "whatasave",
+		Repo:  "codeduel-runner-containers",
+		Token: os.Getenv("GH_TOKEN"),
+	}
+
+	langs, err := provider.GetAvailableLanguages()
+	if err != nil {
+		log.Printf("[MAIN] Warning: Could not fetch dynamic languages: %v. Falling back to local defaults.", err)
+	}
+
+	dockerCli, err := client.NewClientWithOpts(client.FromEnv)
+	if err != nil {
+		log.Fatalf("[MAIN] Error initializing Docker client: %v", err)
+	}
+
+	codeRunner := runner.NewRunner(dockerCli, langs)
+
+	server, err := api.NewAPIServer(
+		os.Getenv("HOST"),
+		os.Getenv("PORT"),
+		codeRunner,
+	)
+
 	if err != nil {
 		log.Fatalf("[MAIN] Error creating API server: %v", err)
 	}
+
 	server.Run()
 }
 
