@@ -7,7 +7,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
@@ -56,10 +55,10 @@ func (r *Runner) Run(language string, code string, inputTests []string) ([]Execu
 	if err != nil {
 		return nil, err
 	}
-	if err := r.client.ContainerStart(context.Background(), runnerContainer.ID, types.ContainerStartOptions{}); err != nil {
+	if err := r.client.ContainerStart(context.Background(), runnerContainer.ID, container.StartOptions{}); err != nil {
 		return nil, err
 	}
-	reader, err := r.client.ContainerLogs(context.Background(), runnerContainer.ID, types.ContainerLogsOptions{
+	reader, err := r.client.ContainerLogs(context.Background(), runnerContainer.ID, container.LogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
 		Follow:     true,
@@ -81,7 +80,7 @@ func (r *Runner) Run(language string, code string, inputTests []string) ([]Execu
 	if err := r.client.ContainerStop(context.Background(), runnerContainer.ID, container.StopOptions{}); err != nil {
 		return result, err
 	}
-	if err := r.client.ContainerRemove(context.Background(), runnerContainer.ID, types.ContainerRemoveOptions{}); err != nil {
+	if err := r.client.ContainerRemove(context.Background(), runnerContainer.ID, container.RemoveOptions{}); err != nil {
 		return result, err
 	}
 	if error != "" {

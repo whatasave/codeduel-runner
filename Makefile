@@ -10,6 +10,9 @@ run: build
 dev:
 	go run .
 
+update:
+	go get -u ./...
+
 test:
 	go test -v ./...
 
