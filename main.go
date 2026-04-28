@@ -21,16 +21,16 @@ func main() {
 		log.Printf("[MAIN] Warning: Could not fetch dynamic images: %v. Falling back to local defaults.", err)
 	}
 
-	dockerCli, err := client.NewClientWithOpts(client.FromEnv)
+	dockerClient, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		log.Fatalf("[MAIN] Error initializing Docker client: %v", err)
 	}
 
-	utils.PullImages(config, dockerCli, images)
+	utils.PullImages(config, dockerClient, images)
 
 	codeRunner := runner.NewRunner(
 		config,
-		dockerCli,
+		dockerClient,
 		images,
 	)
 
