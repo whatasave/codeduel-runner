@@ -30,11 +30,14 @@ func main() {
 		log.Fatalf("[MAIN] Error initializing Docker client: %v", err)
 	}
 
-	codeRunner := runner.NewRunner(config, dockerCli, langs)
+	codeRunner := runner.NewRunner(
+		config,
+		dockerCli,
+		langs,
+	)
 
 	server, err := api.NewAPIServer(
-		config.Host,
-		config.Port,
+		config,
 		codeRunner,
 	)
 
