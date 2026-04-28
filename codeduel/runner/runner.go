@@ -5,16 +5,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
+
+	"github.com/xedom/codeduel/codeduel/utils"
 )
 
 type Runner struct {
+	config *utils.Config
 	client *client.Client
 	images map[string]struct{}
 }
@@ -25,8 +27,9 @@ type ExecutionResult struct {
 	Status int64  `json:"status"`
 }
 
-func NewRunner(dockerClient *client.Client, images map[string]struct{}) *Runner {
+func NewRunner(config *utils.Config, dockerClient *client.Client, images map[string]struct{}) *Runner {
 	return &Runner{
+		config: config,
 		client: dockerClient,
 		images: images,
 	}
@@ -36,16 +39,18 @@ func (r *Runner) Run(language string, code string, inputTests []string) ([]Execu
 	if inputTests == nil {
 		return []ExecutionResult{}, nil
 	}
-	_, ok := r.images[language]
+	image := r.config.DockerImagePrefix + language
+
+	_, ok := r.images[image]
 	if !ok {
 		return nil, fmt.Errorf("language %s not supported", language)
 	}
 	runnerContainer, err := r.client.ContainerCreate(context.Background(), &container.Config{
-		Image: os.Getenv("DOCKER_IMAGE_PREFIX") + language,
+		Image: image,
 		Env: []string{
 			fmt.Sprintf("CODE=%s", code),
 			fmt.Sprintf("INPUT=%s", encodeInput(inputTests)),
-			fmt.Sprintf("TIMEOUT=%s", os.Getenv("DOCKER_TIMEOUT")),
+			fmt.Sprintf("TIMEOUT=%s", r.config.DockerTimeout),
 		},
 	}, nil, nil, nil, "")
 	if err != nil {
