@@ -14,11 +14,7 @@ import (
 func main() {
 	config := utils.LoadConfig()
 
-	provider := &discovery.GitHubProvider{
-		Org:   config.GitHubOrg,
-		Repo:  config.GitHubRepo,
-		Token: config.GitHubToken,
-	}
+	provider := discovery.NewGitHubProvider(config)
 
 	langs, err := provider.GetAvailableLanguages()
 	if err != nil {

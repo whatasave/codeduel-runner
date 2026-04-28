@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/xedom/codeduel/codeduel/utils"
 )
 
 type GHPackage struct {
@@ -18,6 +20,14 @@ type GitHubProvider struct {
 	Org   string
 	Repo  string
 	Token string
+}
+
+func NewGitHubProvider(config *utils.Config) *GitHubProvider {
+	return &GitHubProvider{
+		Org:   config.GitHubOrg,
+		Repo:  config.GitHubRepo,
+		Token: config.GitHubToken,
+	}
 }
 
 func (g *GitHubProvider) GetAvailableLanguages() (map[string]struct{}, error) {
