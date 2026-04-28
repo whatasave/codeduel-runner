@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 
@@ -18,6 +19,7 @@ type Runner struct {
 	config *utils.Config
 	client *client.Client
 	images map[string]string
+	Test   image.PullOptions
 }
 
 type ExecutionResult struct {

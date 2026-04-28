@@ -26,6 +26,8 @@ func main() {
 		log.Fatalf("[MAIN] Error initializing Docker client: %v", err)
 	}
 
+	utils.PullImages(config, dockerCli, images)
+
 	codeRunner := runner.NewRunner(
 		config,
 		dockerCli,
