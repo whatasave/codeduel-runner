@@ -11,16 +11,16 @@ import (
 	"github.com/xedom/codeduel/codeduel/api"
 	"github.com/xedom/codeduel/codeduel/discovery"
 	"github.com/xedom/codeduel/codeduel/runner"
+	"github.com/xedom/codeduel/codeduel/utils"
 )
 
 func main() {
-	loadingEnvVars()
-	warnUndefinedEnvVars()
+	loadConfig := utils.LoadConfig()
 
 	provider := &discovery.GitHubProvider{
 		Org:   "whatasave",
 		Repo:  "codeduel-runner-containers",
-		Token: os.Getenv("GH_TOKEN"),
+		Token: loadConfig.GitHubToken,
 	}
 
 	langs, err := provider.GetAvailableLanguages()
@@ -36,8 +36,8 @@ func main() {
 	codeRunner := runner.NewRunner(dockerCli, langs)
 
 	server, err := api.NewAPIServer(
-		os.Getenv("HOST"),
-		os.Getenv("PORT"),
+		loadConfig.Host,
+		loadConfig.Port,
 		codeRunner,
 	)
 
