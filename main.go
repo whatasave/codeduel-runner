@@ -15,12 +15,12 @@ import (
 )
 
 func main() {
-	loadConfig := utils.LoadConfig()
+	config := utils.LoadConfig()
 
 	provider := &discovery.GitHubProvider{
-		Org:   "whatasave",
-		Repo:  "codeduel-runner-containers",
-		Token: loadConfig.GitHubToken,
+		Org:   config.GitHubOrg,
+		Repo:  config.GitHubRepo,
+		Token: config.GitHubToken,
 	}
 
 	langs, err := provider.GetAvailableLanguages()
@@ -36,8 +36,8 @@ func main() {
 	codeRunner := runner.NewRunner(dockerCli, langs)
 
 	server, err := api.NewAPIServer(
-		loadConfig.Host,
-		loadConfig.Port,
+		config.Host,
+		config.Port,
 		codeRunner,
 	)
 
