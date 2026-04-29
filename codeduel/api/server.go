@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/xedom/codeduel/codeduel/runner"
+	"github.com/xedom/codeduel/codeduel/utils"
 )
 
 type APIServer struct {
@@ -26,17 +27,8 @@ type ApiResult struct {
 	Result any  `json:"result"`
 }
 
-func NewAPIServer(host, port string) (*APIServer, error) {
-	runner, err := runner.NewRunner()
-	if err != nil {
-		return nil, err
-	}
-
-	return &APIServer{
-		host:   host,
-		port:   port,
-		runner: runner,
-	}, nil
+func NewAPIServer(config *utils.Config, runner *runner.Runner) (*APIServer, error) {
+	return &APIServer{host: config.Host, port: config.Port, runner: runner}, nil
 }
 
 func (s *APIServer) Run() {

@@ -5,18 +5,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
+
+	"github.com/xedom/codeduel/codeduel/utils"
 )
 
 type Runner struct {
+	config *utils.Config
 	client *client.Client
-	images map[string]struct{}
+	images map[string]string
+	Test   image.PullOptions
 }
 
 type ExecutionResult struct {
@@ -25,38 +28,38 @@ type ExecutionResult struct {
 	Status int64  `json:"status"`
 }
 
-func NewRunner() (*Runner, error) {
-	client, err := client.NewClientWithOpts(client.FromEnv)
-	if err != nil {
-		return nil, err
+func NewRunner(config *utils.Config, dockerClient *client.Client, images map[string]string) *Runner {
+	return &Runner{
+		config: config,
+		client: dockerClient,
+		images: images,
 	}
-	images := getAvailableDockerImages()
-	return &Runner{client, images}, nil
 }
 
 func (r *Runner) Run(language string, code string, inputTests []string) ([]ExecutionResult, error) {
 	if inputTests == nil {
 		return []ExecutionResult{}, nil
 	}
-	_, ok := r.images[language]
+
+	image, ok := r.images[language]
 	if !ok {
 		return nil, fmt.Errorf("language %s not supported", language)
 	}
 	runnerContainer, err := r.client.ContainerCreate(context.Background(), &container.Config{
-		Image: os.Getenv("DOCKER_IMAGE_PREFIX") + language,
+		Image: image,
 		Env: []string{
 			fmt.Sprintf("CODE=%s", code),
 			fmt.Sprintf("INPUT=%s", encodeInput(inputTests)),
-			fmt.Sprintf("TIMEOUT=%s", os.Getenv("DOCKER_TIMEOUT")),
+			fmt.Sprintf("TIMEOUT=%s", r.config.DockerTimeout),
 		},
 	}, nil, nil, nil, "")
 	if err != nil {
 		return nil, err
 	}
-	if err := r.client.ContainerStart(context.Background(), runnerContainer.ID, types.ContainerStartOptions{}); err != nil {
+	if err := r.client.ContainerStart(context.Background(), runnerContainer.ID, container.StartOptions{}); err != nil {
 		return nil, err
 	}
-	reader, err := r.client.ContainerLogs(context.Background(), runnerContainer.ID, types.ContainerLogsOptions{
+	reader, err := r.client.ContainerLogs(context.Background(), runnerContainer.ID, container.LogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
 		Follow:     true,
@@ -78,7 +81,7 @@ func (r *Runner) Run(language string, code string, inputTests []string) ([]Execu
 	if err := r.client.ContainerStop(context.Background(), runnerContainer.ID, container.StopOptions{}); err != nil {
 		return result, err
 	}
-	if err := r.client.ContainerRemove(context.Background(), runnerContainer.ID, types.ContainerRemoveOptions{}); err != nil {
+	if err := r.client.ContainerRemove(context.Background(), runnerContainer.ID, container.RemoveOptions{}); err != nil {
 		return result, err
 	}
 	if error != "" {
@@ -105,19 +108,4 @@ func encodeInput(inputs []string) string {
 		return "[]"
 	}
 	return string(encoded)
-}
-
-func getAvailableDockerImages() map[string]struct{} {
-	languages, err := os.ReadFile("languages.txt")
-	if err != nil {
-		log.Printf("[MAIN] Error reading languages.txt: %v", err)
-	}
-	var availableDockerImages = map[string]struct{}{}
-	for _, language := range strings.Split(string(languages[:]), "\n") {
-		if language == "" {
-			continue
-		}
-		availableDockerImages[language] = struct{}{}
-	}
-	return availableDockerImages
 }
