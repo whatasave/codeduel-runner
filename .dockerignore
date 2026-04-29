@@ -1,11 +1,8 @@
-docker/*/base
 bin
 .git
 .vscode
 .github
 
 Makefile
-docker_setup.ps1
 .gitignore
-.env.*
-.env
+.env*

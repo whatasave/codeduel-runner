@@ -1,4 +1,4 @@
-FROM golang:1.22 AS build-stage
+FROM golang:1.26.2 AS build-stage
 
 ENV BINARY_NAME=codeduel-runner
 ENV ENV=production
@@ -18,7 +18,7 @@ FROM build-stage AS run-test-stage
 RUN go test -v ./...
 
 
-FROM docker:20.10.24-dind AS release-stage
+FROM docker:29.4.1-dind AS release-stage
 
 WORKDIR /app
 
